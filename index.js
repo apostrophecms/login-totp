@@ -1,3 +1,6 @@
+const { createHash } = require('crypto');
+const base32 = require('base32');
+
 module.exports = {
   improve: '@apostrophecms/login',
   requirements(self) {
@@ -7,6 +10,12 @@ module.exports = {
         AposTotp: {
           phase: 'afterPasswordVerified',
           async props(req, user) {
+            if (!user.totp) {
+              const hash = createHash('sha512').update(user._id).digest('hex');
+
+              const token = base32.encode(hash);
+
+            }
 
             return {};
           },
