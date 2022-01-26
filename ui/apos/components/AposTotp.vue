@@ -5,15 +5,15 @@
 <script>
 
 export default {
-  emits: [ 'done', 'block' ],
   props: {
     sitekey: String
   },
+  emits: [ 'done', 'block' ],
   data() {
     return {
       token: null
     };
-  },
-}
+  }
+};
 </script>
 <style lang='scss'></style>
