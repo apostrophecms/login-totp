@@ -2,5 +2,7 @@
   "missingSecret": "You should provide a secret of a length of 10 characters in your @apostrophecms/login module config.",
   "badSecretSize": "Your secret should be 10 characters length.",
   "invalidToken": "Bad totp code",
-  "updateError": "An error occured while setting up your totp account."
+  "updateError": "An error occured while setting up your totp account.",
+  "verify": "Verify",
+  "loginTitle": "Enable Authenticator Support"
 }

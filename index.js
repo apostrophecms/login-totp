@@ -4,6 +4,11 @@ const totp = require('totp-generator');
 
 module.exports = {
   improve: '@apostrophecms/login',
+  i18n: {
+    aposTotp: {
+      browser: true
+    }
+  },
   init (self, { totp }) {
     if (!totp.secret) {
       self.apos.util.warn('You should provide a secret of a length of 10 characters in the login module\'s config.');
@@ -31,7 +36,7 @@ module.exports = {
                 await self.apos.user
                   .update(req, user, { permissions: false });
               } catch (err) {
-                throw self.apos.error('unprocessable', req.t('AposTotp:updateError'));
+                throw self.apos.error('unprocessable', req.t('aposTotp:updateError'));
               }
 
               return {
@@ -46,7 +51,7 @@ module.exports = {
             const code = req.body.requirements.AposTotp;
 
             if (!code) {
-              throw self.apos.error('invalid', req.t('AposTotp:invalidToken'));
+              throw self.apos.error('invalid', req.t('aposTotp:invalidToken'));
             }
 
             const userToken = self.generateToken(user.totp.hash, self.getSecret());
@@ -54,7 +59,7 @@ module.exports = {
             const totpToken = totp(userToken);
 
             if (totpToken !== code) {
-              throw self.apos.error('invalid', req.t('AposTotp:invalidToken'));
+              throw self.apos.error('invalid', req.t('aposTotp:invalidToken'));
             }
 
             if (!user.totp.activated) {
@@ -64,7 +69,7 @@ module.exports = {
                 await self.apos.user
                   .update(req, user, { permissions: false });
               } catch (err) {
-                throw self.apos.error('unprocessable', req.t('AposTotp:updateError'));
+                throw self.apos.error('unprocessable', req.t('aposTotp:updateError'));
               }
             }
           }
