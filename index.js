@@ -36,7 +36,6 @@ module.exports = {
 
               return {
                 token,
-                userId: user._id,
                 username: user.username
               };
             }

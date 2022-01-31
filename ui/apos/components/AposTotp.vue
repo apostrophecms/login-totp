@@ -4,7 +4,7 @@
       v-if="token"
       class="apos-totp__setup"
     >
-      <h3>Activate Totp auth</h3>
+      <h3>Activate TOTP auth</h3>
       <p>Scan this QR Code in Google Authenticator or a similar app:</p>
       <canvas
         ref="canvas"
@@ -15,16 +15,19 @@
       <p>When you are finished setting up totp, simply enter the code given by your app below.</p>
     </div>
     <div class="apos-topt__login">
-      <h3>Log in with you Totp app</h3>
-      <label for="code">Code:</label>
-      <input
-        v-model="code"
-        type="text"
-        name="code"
-      >
-      <button @click="sendCode">
-        Ok
-      </button>
+      <h3>Log in with you TOTP app</h3>
+      <form @submit="sendCode">
+        <label for="code">Code:</label>
+        <input
+          v-model="code"
+          type="text"
+          name="code"
+        >
+        <input
+          type="submit"
+          value="Ok"
+        >
+      </form>
     </div>
     <a href="/">Back</a>
   </div>
@@ -39,10 +42,6 @@ export default {
       type: String,
       default: null
     },
-    userId: {
-      type: String,
-      default: null
-    },
     username: {
       type: String,
       default: null
@@ -51,9 +50,7 @@ export default {
   emits: [ 'done', 'block' ],
   data() {
     return {
-      code: '',
-      setupTotpRoute: '/api/v1/@apostrophecms/login/setup-totp',
-      setupMode: this.setupTotpMode
+      code: ''
     };
   },
   mounted () {
