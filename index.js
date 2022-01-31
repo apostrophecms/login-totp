@@ -36,7 +36,7 @@ module.exports = {
 
               return {
                 token,
-                username: user.username
+                projectName: self.apos.shortName
               };
             }
 

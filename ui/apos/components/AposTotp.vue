@@ -42,7 +42,7 @@ export default {
       type: String,
       default: null
     },
-    username: {
+    projectName: {
       type: String,
       default: null
     }
@@ -55,7 +55,7 @@ export default {
   },
   mounted () {
     if (this.token) {
-      const otpUrl = `otpauth://totp/${this.username}?secret=${this.token}&period=30`;
+      const otpUrl = `otpauth://totp/${this.projectName}?secret=${this.token}&period=30`;
 
       qrcode.toCanvas(this.$refs.canvas, otpUrl);
     }
