@@ -69,7 +69,7 @@ export default {
   },
   mounted () {
     if (this.token) {
-      const otpUrl = `otpauth://totp/${this.projectName}?secret=${this.token}&period=30`;
+      const otpUrl = `otpauth://totp/${this.identity}?secret=${this.token}&period=30`;
 
       qrcode.toCanvas(this.$refs.canvas, otpUrl);
     }

@@ -6,9 +6,9 @@ module.exports = {
   improve: '@apostrophecms/login',
   init (self, { totp }) {
     if (!totp.secret) {
-      self.apos.util.warn('You should provide a secret of a length of 10 characters in the login module\'s config.');
-    } else if (totp.secret.length < 10) {
-      self.apos.util.warn('Your secret should be 10 characters length.');
+      self.apos.util.warn('You should provide a secret 10 characters in length in the login module\'s config.');
+    } else if (totp.secret.length !== 10) {
+      self.apos.util.warn('Your secret should be exactly 10 characters in length.');
     }
   },
   requirements(self) {
@@ -37,7 +37,9 @@ module.exports = {
 
               return {
                 token,
-                projectName: self.apos.shortName
+                // Allows multiple identities on the same site to be distinguished
+                // in a TOTP app
+                identity: `${user.username}@${self.apos.shortName}`
               };
             }
 
@@ -85,7 +87,7 @@ module.exports = {
       getSecret () {
         const { secret } = self.options.totp;
 
-        return secret && secret.length >= 10 && secret;
+        return secret;
       }
     };
   }
