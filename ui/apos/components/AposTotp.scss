@@ -1,4 +1,3 @@
-
 .apos-totp {
   $block-width: 530px;
 
@@ -88,7 +87,7 @@
   }
 
   &__login-input {
-    height: 55px;
+    height: 56px;
     width: 47px;
     box-sizing: border-box;
     text-align: center;
@@ -97,6 +96,10 @@
     background-color: #14171e;
     border: solid 1px #8895a7;
     color: #fff;
+
+    &:focus {
+      border: solid 1px #fff;
+    }
 
     appearance: textfield;
 
@@ -110,11 +113,11 @@
     }
   }
 
-  // &__login-submit ::v-deep .apos-button {
-  //   height: 47px;
-  // }
-}
-.apos-totp__login-submit ::v-deep .apos-button {
-  height: 47px;
+  &__login-submit {
+    height: 56px;
 
+    ::v-deep .apos-button {
+          height: 100%;
+    }
+  }
 }
