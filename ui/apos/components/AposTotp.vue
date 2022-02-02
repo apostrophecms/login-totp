@@ -67,13 +67,15 @@
       >
         <input
           v-for="(_, i) in code"
-          :key="code[i]"
+          :key="i"
+          ref="inputs"
           v-model="code[i]"
-          class="apos-totp__login-input"
           type="number"
-          min="0"
-          max="9"
-          placeholder="0"
+          maxlength="1"
+          pattern="([12345])\w{0}"
+          class="apos-totp__login-input"
+          placeholder="."
+          @keyup="handleKeyDown($event, i)"
         >
         <AposButton
           :busy="busy"
@@ -92,6 +94,11 @@
 
 <script>
 import qrcode from 'qrcode';
+// const codeLength = 6;
+// const code = [ ...Array(codeLength).keys() ].reduce((acc, i) => ({
+//   ...acc,
+//   [`code${i}`]: ''
+// }), {});
 
 export default {
   props: {
@@ -115,10 +122,14 @@ export default {
   emits: [ 'done', 'block', 'confirm' ],
   data() {
     return {
-      code: Array(6),
+      // ...code,
+      // codeLength,
+      // code: Array(6).fill(''),
+      code: [ '', '', '', '', '', '' ],
       tooltip: 'Copied!',
       copying: false,
-      verifyDisabled: true
+      verifyDisabled: true,
+      busy: false
     };
   },
   watch: {
@@ -134,6 +145,8 @@ export default {
 
       qrcode.toCanvas(this.$refs.canvas, otpUrl);
     }
+
+    this.$refs.inputs[0].focus();
   },
   methods: {
     sendCode () {
@@ -157,8 +170,96 @@ export default {
           this.copying = false;
         }, time);
       }
+    },
+    handleKeyDown (e, i) {
+      const allowedKeys = [ 'Backspace', 'Enter' ];
+      e.preventDefault();
+
+      const number = parseInt(e.key, 10);
+
+      // if (!number && number !== 0 && !allowedKeys.includes(e.key)) {
+      // e.preventDefault();
+      // }
+
+      if (this.code[i].length === 1) {
+        e.preventDefault();
+
+        this.focusInput(i);
+      }
+
+      if (this.code[i].length > 1) {
+        e.preventDefault();
+        this.code.splice(i, 1, e.key);
+
+        this.focusInput(i);
+      }
+
+      if (e.key === 'ArrowLeft') {
+        this.focusInput(i, true);
+      }
+
+      if (e.key === 'ArrowRight') {
+        this.focusInput(i);
+      }
+
+      // this.code.splice(i, 1, e.key);
+    },
+
+    focusInput (i, before = false) {
+      const inputs = this.$refs.inputs;
+
+      if (before) {
+        if (inputs[i - 1]) {
+          inputs[i - 1].focus();
+        } else {
+          inputs[inputs.length - 1].focus();
+        }
+
+        return;
+      }
+
+      if (inputs[i + 1]) {
+        inputs[i + 1].focus();
+      } else {
+        inputs[0].focus();
+      }
     }
+    // handleKeyDown(event, index) {
+    //   const key = event.key;
+    //   if (!key) {
+    //     return;
+    //   }
+    //   if (key === 'Backspace') {
+    //     if (this.code[index]) {
+    //       return (this.code[index] = '');
+    //     }
+
+    //     if (index > 0) {
+    //       event.target.previousElementSibling.focus();
+    //     }
+    //   } else if (
+    //     !event.shiftKey &&
+    //             (key === 'ArrowRight' || key === 'Right')
+    //   ) {
+    //     if (index < this.code.length - 1) {
+    //       event.target.nextElementSibling.focus();
+    //     }
+    //   } else if (
+    //     !event.shiftKey &&
+    //             (key === 'ArrowLeft' || key === 'Left')
+    //   ) {
+    //     if (index > 0) {
+    //       event.target.previousElementSibling.focus();
+    //     }
+    //   } else if (key.length === 1 && this.code[index]) {
+    //     this.code[index] = key;
+    //     this.$forceUpdate();
+    //     if (index < this.code.length - 1) {
+    //       event.target.nextElementSibling.focus();
+    //     }
+    //   }
+    // }
   }
 };
 </script>
-<style lang='scss' src="./AposTotp.scss"></style>
+<style lang='scss' src="./AposTotp.scss" scoped></style>
