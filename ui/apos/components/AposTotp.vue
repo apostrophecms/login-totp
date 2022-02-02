@@ -41,7 +41,7 @@ export default {
       type: String,
       default: null
     },
-    projectName: {
+    identity: {
       type: String,
       default: null
     },
