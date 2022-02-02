@@ -87,7 +87,6 @@
         />
       </form>
     </div>
-    <a href="/">Back</a>
   </div>
 </template>
 
@@ -100,12 +99,20 @@ export default {
       type: String,
       default: null
     },
-    username: {
+    projectName: {
       type: String,
+      default: null
+    },
+    success: {
+      type: Boolean,
+      default: false
+    },
+    error: {
+      type: Error,
       default: null
     }
   },
-  emits: [ 'done', 'block' ],
+  emits: [ 'done', 'block', 'confirm' ],
   data() {
     return {
       code: Array(6),
@@ -114,9 +121,16 @@ export default {
       verifyDisabled: true
     };
   },
+  watch: {
+    success (newVal) {
+      if (newVal) {
+        this.$emit('confirm');
+      }
+    }
+  },
   mounted () {
     if (this.token) {
-      const otpUrl = `otpauth://totp/${this.username}?secret=${this.token}&period=30`;
+      const otpUrl = `otpauth://totp/${this.projectName}?secret=${this.token}&period=30`;
 
       qrcode.toCanvas(this.$refs.canvas, otpUrl);
     }
