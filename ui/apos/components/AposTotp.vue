@@ -16,7 +16,7 @@
     </div>
     <div class="apos-topt__login">
       <h3>Log in with you TOTP app</h3>
-      <form @submit="sendCode">
+      <form @submit.prevent="sendCode">
         <label for="code">Code:</label>
         <input
           v-model="code"
@@ -29,7 +29,6 @@
         >
       </form>
     </div>
-    <a href="/">Back</a>
   </div>
 </template>
 
@@ -45,13 +44,28 @@ export default {
     projectName: {
       type: String,
       default: null
+    },
+    success: {
+      type: Boolean,
+      default: false
+    },
+    error: {
+      type: Error,
+      default: null
     }
   },
-  emits: [ 'done', 'block' ],
+  emits: [ 'done', 'block', 'confirm' ],
   data() {
     return {
       code: ''
     };
+  },
+  watch: {
+    success (newVal) {
+      if (newVal) {
+        this.$emit('confirm');
+      }
+    }
   },
   mounted () {
     if (this.token) {

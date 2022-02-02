@@ -16,6 +16,7 @@ module.exports = {
       add: {
         AposTotp: {
           phase: 'afterPasswordVerified',
+          askForConfirmation: true,
           async props(req, user) {
             if (!user.totp || !user.totp.activated) {
               const validSecret = self.getSecret();
@@ -42,8 +43,8 @@ module.exports = {
 
             return {};
           },
-          async verify(req, user) {
-            const code = req.body.requirements.AposTotp;
+          async verify(req, user, value) {
+            const code = self.apos.launder.string(value);
 
             if (!code) {
               throw self.apos.error('invalid', req.t('AposTotp:invalidToken'));
