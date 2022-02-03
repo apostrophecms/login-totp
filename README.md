@@ -62,10 +62,10 @@ module.exports = {
 
 If a user loses their device, an admin can edit the appropriate user via the admin bar. Select "Yes" for the "Reset TOTP" field and save the user.
 
-If an admin loses their own device, they can reset TOTP via a command line task. Pass the username as the sole argument:
+If an admin user loses their own device, they can reset TOTP via a command line task. Pass the username as the sole argument:
 
 ```
-node app @apostrophecms/user:reset-totp admin
+node app @apostrophecms/user:reset-totp username-goes-here
 ```
 
 Once TOTP is reset, the user is able to set it up again on their next login.
