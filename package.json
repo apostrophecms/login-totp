@@ -1,0 +1,45 @@
+{
+  "name": "@apostrophecms/login-totp",
+  "version": "1.0.0-beta",
+  "description": "Adds totp (time-based one-time password) to Apostrophe login pages",
+  "main": "index.js",
+  "scripts": {
+    "lint": "npm run eslint",
+    "eslint": "eslint .",
+    "test": "npm run lint"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/apostrophecms/login-totp.git"
+  },
+  "keywords": [
+    "apostrophe",
+    "login",
+    "totp"
+  ],
+  "author": "Apostrophe Technologies",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/apostrophecms/login-totp/issues"
+  },
+  "homepage": "https://github.com/apostrophecms/login-totp#readme",
+  "devDependencies": {
+    "apostrophe": "github:apostrophecms/apostrophe#feature/login-reqs",
+    "eslint": "^7.9.0",
+    "eslint-config-apostrophe": "^3.4.0",
+    "eslint-config-standard": "^14.1.1",
+    "eslint-plugin-import": "^2.22.0",
+    "eslint-plugin-node": "^11.1.0",
+    "eslint-plugin-promise": "^4.2.1",
+    "eslint-plugin-standard": "^4.0.1",
+    "eslint-plugin-vue": "^8.3.0"
+  },
+  "peerDependencies": {
+    "apostrophe": "^3.13.0"
+  },
+  "dependencies": {
+    "qrcode": "^1.5.0",
+    "thirty-two": "^1.0.2",
+    "totp-generator": "0.0.13"
+  }
+}
