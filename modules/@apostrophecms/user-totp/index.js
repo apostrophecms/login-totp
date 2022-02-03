@@ -1,4 +1,5 @@
 module.exports = {
+  improve: '@apostrophecms/user',
   fields: {
     add: {
       resetTotp: {
@@ -8,35 +9,37 @@ module.exports = {
       }
     }
   },
-  tasks: {
-    resetTotp: {
-      usage: 'Invoke this task with a username or email address to reset TOTP (Google Authenticator) so they can set it up again.',
-      async task(argv) {
-        const username = argv._[1];
-        const result = await self.safe.updateOne({
-          $or: [
-            {
-              username
-            },
-            {
-              email: username
+  tasks(self) {
+    return {
+      resetTotp: {
+        usage: 'Invoke this task with a username or email address to reset TOTP (Google Authenticator) so they can set it up again.',
+        async task(argv) {
+          const username = argv._[1];
+          const result = await self.safe.updateOne({
+            $or: [
+              {
+                username
+              },
+              {
+                email: username
+              }
+            ]
+          }, {
+            $unset: {
+              totp: 1
             }
-          ]
-        }, {
-          $unset: {
-            totp: 1
+          });
+          if (!result.modifiedCount) {
+            throw 'User not found.';
           }
-        });
-        if (!result.modifiedCount) {
-          throw 'User not found.';
         }
       }
-    }
+    };
   },
   handlers(self) {
     return {
       beforeSave: {
-        resetTotp(req, doc) {
+        async resetTotp(req, doc) {
           if (doc.resetTotp) {
             doc.resetTotp = false;
             await self.apos.user.safe.updateOne({

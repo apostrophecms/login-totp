@@ -1,6 +1,8 @@
 const { randomBytes } = require('crypto');
 const base32 = require('thirty-two');
 const totp = require('totp-generator');
+const path = require('path');
+const fs = require('fs');
 
 module.exports = {
   improve: '@apostrophecms/login',
