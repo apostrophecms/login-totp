@@ -48,8 +48,9 @@ module.exports = {
 
             return {};
           },
-          async verify(req, user, value) {
-            const code = self.apos.launder.string(value);
+          async verify(req, data, user) {
+
+            const code = self.apos.launder.string(data);
 
             if (!code) {
               throw self.apos.error('invalid', req.t('aposTotp:invalidToken'));
