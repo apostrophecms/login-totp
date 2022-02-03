@@ -4,6 +4,10 @@ const totp = require('totp-generator');
 
 module.exports = {
   improve: '@apostrophecms/login',
+  bundle: {
+    directory: 'modules',
+    modules: getBundleModuleNames()
+  },
   init (self, { totp }) {
     if (!totp.secret) {
       self.apos.util.warn('You should provide a secret 10 characters in length in the login module\'s config.');
@@ -22,19 +26,21 @@ module.exports = {
               const validSecret = self.getSecret();
               const hash = randomBytes(validSecret ? 5 : 10).toString('hex');
               const token = self.generateToken(hash, validSecret);
-
-              user.totp = {
-                hash,
-                activated: false
-              };
-
               try {
-                await self.apos.user
-                  .update(req, user, { permissions: false });
+                await self.apos.user.safe.updateOne({
+                  _id: user._id
+                }, {
+                  $set: {
+                    totp: {
+                      hash,
+                      activated: false
+                    }
+                  }
+                });
               } catch (err) {
+                self.apos.util.error(err);
                 throw self.apos.error('unprocessable', req.t('AposTotp:updateError'));
               }
-
               return {
                 token,
                 // Allows multiple identities on the same site to be distinguished
@@ -60,15 +66,16 @@ module.exports = {
               throw self.apos.error('invalid', req.t('AposTotp:invalidToken'));
             }
 
-            if (!user.totp.activated) {
-              user.totp.activated = true;
-
-              try {
-                await self.apos.user
-                  .update(req, user, { permissions: false });
-              } catch (err) {
-                throw self.apos.error('unprocessable', req.t('AposTotp:updateError'));
-              }
+            try {
+                await self.apos.user.safe.updateOne({
+                _id: user._id
+              }, {
+                $set: {
+                  'totp.activated': true
+                }
+              });
+            } catch (err) {
+              throw self.apos.error('unprocessable', req.t('AposTotp:updateError'));
             }
           }
         }
@@ -92,3 +99,11 @@ module.exports = {
     };
   }
 };
+
+function getBundleModuleNames() {
+  const source = path.join(__dirname, './modules/@apostrophecms');
+  return fs
+    .readdirSync(source, { withFileTypes: true })
+    .filter(dirent => dirent.isDirectory())
+    .map(dirent => `@apostrophecms/${dirent.name}`);
+}

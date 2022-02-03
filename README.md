@@ -57,3 +57,15 @@ module.exports = {
 ```
 
 > ⚠️ All configuration of TOTP related options is done on the `@apostrophecms/login` module. The `@apostrophecms/login-totp` module is just an "improvement" to that module, so it has no configuration options of its own.
+
+### Resetting TOTP when a user loses their device
+
+If a user loses their device, an admin can edit the appropriate user via the admin bar. Select "Yes" for the "Reset TOTP" field and save the user.
+
+If an admin loses their own device, they can reset TOTP via a command line task. Pass the username as the sole argument:
+
+```
+node app @apostrophecms/user:reset-totp admin
+```
+
+Once TOTP is reset, the user is able to set it up again on their next login.
