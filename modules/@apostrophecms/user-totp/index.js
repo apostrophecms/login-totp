@@ -7,6 +7,12 @@ module.exports = {
         type: 'boolean',
         help: 'Select this option and save to reset the user\'s TOTP (Google Authenticator) configuration once, so they can set it up again.'
       }
+    },
+    group: {
+      totp: {
+        label: 'TOTP',
+        fields: [ 'resetTotp' ]
+      }
     }
   },
   tasks(self) {
