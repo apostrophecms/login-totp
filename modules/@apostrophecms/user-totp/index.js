@@ -17,7 +17,7 @@ module.exports = {
   },
   tasks(self) {
     return {
-      resetTotp: {
+      'reset-totp': {
         usage: 'Invoke this task with a username or email address to reset TOTP (Google Authenticator) so they can set it up again.',
         async task(argv) {
           const username = argv._[1];
