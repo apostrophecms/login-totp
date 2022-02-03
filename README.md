@@ -19,7 +19,7 @@
 </div>
 
 This login verification module adds a [TOTP (Time-based One-Time Password)](https://en.wikipedia.org/wiki/Time-based_one-time_password) check when any user logs into the site, compatible with Google Authenticator or any TOTP app.
-When activated, it will ask unregistered users to add a token to their app through a QR code. Once done, it will ak users to enter the code provided by their app after the initial login step.
+When activated, it will ask unregistered users to add a token to their app through a QR code. Once done, it will ask users to enter the code provided by their app after the initial login step.
 
 ## Installation
 
@@ -42,18 +42,18 @@ require('apostrophe')({
 });
 ```
 
-We highly recommend you to set a specific secret for your TOTP authentication system.
-This secret must be added to the `@apostrophecms/login` module (*not* this module). This module adds functionality to that module (it "improves" it, in Apostrophe speak), so most configuration should be directly on the core login module.
-
-:warning: this secret must be at least 10 characters long (we will remove extra ones), otherwise we won't use it. We need a fixed amount of characters to generate the right length token.
+You must configure the `@apostrophecms/login` module with a TOTP secret, as shown. The secret must be **exactly 10 characters long.**
 
 ```javascript
 // modules/@apostrophecms/login/index.js
 module.exports = {
   options: {
     totp: {
+      // Should be a random string, exactly 10 characters long
       secret: 'totpsecret'
     }
   }
 };
 ```
+
+> ⚠️ All configuration of TOTP related options is done on the `@apostrophecms/login` module. The `@apostrophecms/login-totp` module is just an "improvement" to that module, so it has no configuration options of its own.
