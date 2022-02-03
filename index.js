@@ -90,7 +90,7 @@ module.exports = {
                   throw self.apos.error('notfound');
                 }
               } catch (err) {
-                throw self.apos.error('unprocessable', req.t('AposTotp:updateError'));
+                throw self.apos.error('unprocessable', req.t('aposTotp:updateError'));
               }
             }
           }
