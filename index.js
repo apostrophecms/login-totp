@@ -8,6 +8,11 @@ module.exports = {
     directory: 'modules',
     modules: getBundleModuleNames()
   },
+  i18n: {
+    aposTotp: {
+      browser: true
+    }
+  },
   init (self, { totp }) {
     if (!totp.secret) {
       self.apos.util.warn('You should provide a secret 10 characters in length in the login module\'s config.');
@@ -26,20 +31,17 @@ module.exports = {
               const validSecret = self.getSecret();
               const hash = randomBytes(validSecret ? 5 : 10).toString('hex');
               const token = self.generateToken(hash, validSecret);
-              try {
-                await self.apos.user.safe.updateOne({
-                  _id: user._id
-                }, {
-                  $set: {
-                    totp: {
-                      hash,
-                      activated: false
-                    }
+              if (!(await self.apos.user.safe.updateOne({
+                _id: user._id
+              }, {
+                $set: {
+                  totp: {
+                    hash,
+                    activated: false
                   }
-                });
-              } catch (err) {
-                self.apos.util.error(err);
-                throw self.apos.error('unprocessable', req.t('AposTotp:updateError'));
+                }
+              })).modifiedCount) {
+                throw self.apos.error('notfound');
               }
               return {
                 token,
@@ -51,31 +53,34 @@ module.exports = {
 
             return {};
           },
-          async verify(req, user, value) {
-            const code = self.apos.launder.string(value);
+          async verify(req, data, user) {
+            const code = self.apos.launder.string(data);
 
             if (!code) {
-              throw self.apos.error('invalid', req.t('AposTotp:invalidToken'));
+              throw self.apos.error('invalid', req.t('aposTotp:invalidToken'));
             }
 
             const userToken = self.generateToken(user.totp.hash, self.getSecret());
-
             const totpToken = totp(userToken);
 
             if (totpToken !== code) {
-              throw self.apos.error('invalid', req.t('AposTotp:invalidToken'));
+              throw self.apos.error('invalid', req.t('aposTotp:invalidToken'));
             }
 
-            try {
-                await self.apos.user.safe.updateOne({
-                _id: user._id
-              }, {
-                $set: {
-                  'totp.activated': true
+            if (!user.totp.activated) {
+              try {
+                if (!(await self.apos.user.safe.updateOne({
+                  _id: user._id
+                }, {
+                  $set: {
+                    'totp.activated': true
+                  }
+                })).modifiedCount) {
+                  throw self.apos.error('notfound');
                 }
-              });
-            } catch (err) {
-              throw self.apos.error('unprocessable', req.t('AposTotp:updateError'));
+              } catch (err) {
+                throw self.apos.error('unprocessable', req.t('AposTotp:updateError'));
+              }
             }
           }
         }

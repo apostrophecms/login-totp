@@ -1,0 +1,155 @@
+.apos-totp {
+  $danger-color: #EA433A;
+  $block-width: 530px;
+
+  position: relative;
+  width: $block-width;
+  left: calc((330px - $block-width) / 2); // 330 being the login wrapper size
+
+  &__setup {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-bottom: 30px;
+    border-bottom: 1px solid #212121;
+  }
+
+  &__title {
+    @include type-display;
+
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 16px;
+
+    &--success {
+      margin-bottom: 32px;
+    }
+  }
+
+  &__text {
+    @include type-large;
+  }
+
+  &__scan-title {
+    @include type-title;
+  }
+
+  &__qrcode {
+    width: 100%;
+    border-radius: 10px;
+    margin-bottom: 20px;
+  }
+
+  &__text-grey {
+    @include type-large;
+
+    color: var(--a-base-5);
+    margin: 0;
+  }
+
+  &__token-container {
+    position: relative;
+    margin-top: 10px;
+    text-align: right;
+  }
+
+  &__token {
+    @include type-base;
+
+    color: #F9F9F9;
+    background-color: #0f0f0f;
+    border: solid 1px #414141;
+    padding: 5px;
+    margin: 0 0 5px 0;
+  }
+
+  &__copy-token-btn {
+    background-color: transparent;
+    border: none;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    float: right;
+  }
+
+  &__copy-token-text {
+    margin-left: 5px;
+  }
+
+  &__token-copied {
+    position: absolute;
+    bottom: 0;
+    right: -20px;
+  }
+
+  &__login-text {
+    margin-top: 20px;
+    text-align: center;
+  }
+
+  &__login-form {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  &__login-input {
+    height: 56px;
+    width: 47px;
+    box-sizing: border-box;
+    text-align: center;
+    font-size: var(--a-type-display);
+    border-radius: 5px;
+    background-color: #14171e;
+    border: solid 1px #8895a7;
+    color: #fff;
+    margin-right: 15px;
+    caret-color: transparent;
+
+    &:focus {
+      border: solid 1px #fff;
+      outline: none;
+    }
+
+    appearance: textfield;
+
+    &::-webkit-inner-spin-button {
+      -webkit-appearance: none;
+      margin: 0;
+    }
+
+    &--filled {
+      border-color: var(--a-success);
+    }
+
+    &--error {
+      border-color: $danger-color;
+    }
+
+  }
+
+  &__login-submit {
+    height: 56px;
+    flex-grow: 1;
+
+    &--disabled {
+      opacity: 50%;
+    }
+
+    ::v-deep .apos-button {
+      height: 100%;
+    }
+  }
+
+  &__error {
+    @include type-large;
+
+    height: 15px;
+    color: $danger-color;
+    text-transform: uppercase;
+  }
+
+  &__success {
+    text-align: center;
+  }
+}
