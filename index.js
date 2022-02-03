@@ -29,7 +29,10 @@ module.exports = {
           phase: 'afterPasswordVerified',
           askForConfirmation: true,
           async props(req, user) {
-            if (!user.totp || !user.totp.activated) {
+            const safe = await self.apos.user.safe.findOne({
+              _id: user._id
+            });
+            if (!safe.totp || !safe.totp.activated) {
               const validSecret = self.getSecret();
               const hash = randomBytes(validSecret ? 5 : 10).toString('hex');
               const token = self.generateToken(hash, validSecret);
@@ -62,14 +65,20 @@ module.exports = {
               throw self.apos.error('invalid', req.t('aposTotp:invalidToken'));
             }
 
-            const userToken = self.generateToken(user.totp.hash, self.getSecret());
+            const safe = await self.apos.user.safe.findOne({
+              _id: user._id
+            });
+            if (!safe.totp) {
+              throw self.apos.error('invalid', req.t('aposTotp:notConfigured'));
+            }
+            const userToken = self.generateToken(safe.totp.hash, self.getSecret());
             const totpToken = totp(userToken);
 
             if (totpToken !== code) {
               throw self.apos.error('invalid', req.t('aposTotp:invalidToken'));
             }
 
-            if (!user.totp.activated) {
+            if (!safe.totp.activated) {
               try {
                 if (!(await self.apos.user.safe.updateOne({
                   _id: user._id
