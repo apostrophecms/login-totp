@@ -28,7 +28,7 @@ module.exports = {
               const hash = randomBytes(validSecret ? 5 : 10).toString('hex');
               const token = self.generateToken(hash, validSecret);
 
-              await self.db.updateOne({
+              await self.apos.doc.db.updateOne({
                 _id: user._id,
                 type: '@apostrophecms/user'
               }, {
@@ -49,7 +49,6 @@ module.exports = {
             return {};
           },
           async verify(req, data, user) {
-
             const code = self.apos.launder.string(data);
 
             if (!code) {
@@ -57,7 +56,6 @@ module.exports = {
             }
 
             const userToken = self.generateToken(user.totp.hash, self.getSecret());
-
             const totpToken = totp(userToken);
 
             if (totpToken !== code) {
@@ -69,14 +67,12 @@ module.exports = {
                 await self.apos.user
                   .update(req, user, { permissions: false });
 
-                await self.db.updateOne({
+                await self.apos.doc.db.updateOne({
                   _id: user._id,
                   type: '@apostrophecms/user'
                 }, {
                   $set: {
-                    totp: {
-                      activated: true
-                    }
+                    'totp.activated': true
                   }
                 });
 
