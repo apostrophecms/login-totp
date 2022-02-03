@@ -126,9 +126,9 @@ export default {
       type: String,
       default: null
     },
-    projectName: {
+    identity: {
       type: String,
-      default: null
+      default: ''
     },
     success: {
       type: Boolean,
@@ -179,7 +179,7 @@ export default {
   },
   mounted () {
     if (this.token && this.$refs.canvas) {
-      const otpUrl = `otpauth://totp/${this.projectName}?secret=${this.token}&period=30`;
+      const otpUrl = `otpauth://totp/${this.identity}?secret=${this.token}&period=30`;
 
       qrcode.toCanvas(this.$refs.canvas, otpUrl);
     }
