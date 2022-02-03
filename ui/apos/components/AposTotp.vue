@@ -1,24 +1,27 @@
 <template>
   <div class="apos-totp">
+    <h3
+      class="apos-totp__title"
+      :class="{'apos-totp__title--success': token && success}"
+    >
+      {{ token ? $t('aposTotp:loginTitleSetup') : $t('aposTotp:loginTitle') }}
+    </h3>
     <div
-      v-if="token"
+      v-if="token && !success"
       class="apos-totp__setup"
     >
-      <h3 class="apos-totp__title">
-        $('aposTotp:loginTitle')
-      </h3>
       <p class="apos-totp__text">
-        Install Google Authenticator or similar TOTP app, then
+        {{ $t('aposTotp:setupText1') }}
       </p>
       <p class="apos-totp__scan-title">
-        Scan this QR code
+        {{ $t('aposTotp:setupText2') }}
       </p>
       <canvas
         ref="canvas"
         class="apos-totp__qrcode"
       />
       <p class="apos-totp__text-grey">
-        Or manually enter this key
+        {{ $t('aposTotp:setupText3') }}
       </p>
       <div class="apos-totp__token-container">
         <p class="apos-totp__token">
@@ -32,11 +35,13 @@
             icon="content-copy-icon"
             class="apos-button__icon"
           />
-          <span class="apos-totp__copy-token-text">Copy key</span>
+          <span class="apos-totp__copy-token-text">
+            {{ $t('aposTotp:copyKey') }}
+          </span>
         </button>
         <AposIndicator
           v-if="copying"
-          icon="check-bold-icon"
+          icon="check-circle-icon"
           class="apos-button__icon apos-totp__token-copied"
           icon-color="#00bf9a"
         />
@@ -48,19 +53,16 @@
         />
       </div>
     </div>
-    <div class="apos-topt__login">
+    <div
+      v-if="!token || (token && !success)"
+      class="apos-topt__login"
+    >
       <p
         v-if="token"
         class="apos-totp__text apos-totp__login-text"
       >
-        Then enter the verification code from your authenticator app
+        {{ $t('aposTotp:loginText') }}
       </p>
-      <h3
-        v-else
-        class="apos-totp__title"
-      >
-        Log in with you TOTP app
-      </h3>
       <form
         class="apos-totp__login-form"
         @submit.prevent="sendCode"
@@ -70,16 +72,22 @@
           :key="i"
           ref="inputs"
           v-model="code[i]"
-          type="number"
-          maxlength="1"
-          pattern="([12345])\w{0}"
           class="apos-totp__login-input"
-          placeholder="."
-          @keyup="handleKeyDown($event, i)"
+          :class="{
+            'apos-totp__login-input--filled': code[i],
+            'apos-totp__login-input--error': errorMsg
+          }"
+          type="number"
+          placeholder="0"
+          @keydown="handleKeyDown($event, i)"
+          @keyup="handleKeyUp"
+          @paste.prevent="pasteCode"
         >
         <AposButton
+          ref="submit"
           :busy="busy"
           :disabled="verifyDisabled"
+          :class="{'apos-totp__login-submit--disabled': verifyDisabled}"
           type="primary"
           label="aposTotp:verify"
           button-type="submit"
@@ -88,17 +96,29 @@
           @click="sendCode"
         />
       </form>
+      <p class="apos-totp__error">
+        {{ errorMsg }}
+      </p>
+    </div>
+    <div
+      v-if="token && success"
+      class="apos-totp__success"
+    >
+      <p class="apos-totp__text">
+        {{ $t('aposTotp:successMessage') }}
+      </p>
+      <AposIndicator
+        icon="check-decagram-icon"
+        class="apos-button__icon"
+        icon-color="#00bf9a"
+        :icon-size="77"
+      />
     </div>
   </div>
 </template>
 
 <script>
 import qrcode from 'qrcode';
-// const codeLength = 6;
-// const code = [ ...Array(codeLength).keys() ].reduce((acc, i) => ({
-//   ...acc,
-//   [`code${i}`]: ''
-// }), {});
 
 export default {
   props: {
@@ -122,35 +142,56 @@ export default {
   emits: [ 'done', 'block', 'confirm' ],
   data() {
     return {
-      // ...code,
-      // codeLength,
-      // code: Array(6).fill(''),
-      code: [ '', '', '', '', '', '' ],
-      tooltip: 'Copied!',
+      code: Array(6).fill(''),
       copying: false,
-      verifyDisabled: true,
-      busy: false
+      busy: false,
+      controlPressed: false,
+      errorMsg: ''
     };
   },
+  computed: {
+    verifyDisabled () {
+      return this.code.some((digit) => !digit);
+    }
+  },
   watch: {
-    success (newVal) {
+    async success (newVal) {
+      this.busy = false;
+
       if (newVal) {
+        if (this.token) {
+          await this.awaiting(3000);
+        }
+
         this.$emit('confirm');
       }
+    },
+    error (newVal) {
+      if (newVal) {
+        this.busy = false;
+        this.errorMsg = newVal.body.message;
+      }
+    },
+    code () {
+      this.errorMsg = '';
+
     }
   },
   mounted () {
-    if (this.token) {
+    if (this.token && this.$refs.canvas) {
       const otpUrl = `otpauth://totp/${this.projectName}?secret=${this.token}&period=30`;
 
       qrcode.toCanvas(this.$refs.canvas, otpUrl);
     }
 
-    this.$refs.inputs[0].focus();
+    if (this.$refs.inputs) {
+      this.$refs.inputs[0].focus();
+    }
   },
   methods: {
     sendCode () {
-      this.$emit('done', this.code);
+      this.busy = true;
+      this.$emit('done', this.code.join(''));
     },
     async copyToken (token) {
       const time = 1200;
@@ -160,55 +201,62 @@ export default {
 
         this.copying = true;
 
-        setTimeout(() => {
-          this.copying = false;
-        }, time);
+        await this.awaiting(time);
+        this.copying = false;
       } catch (err) {
         this.copying = 'error';
 
-        setTimeout(() => {
-          this.copying = false;
-        }, time);
+        await this.awaiting(time);
+        this.copying = false;
       }
     },
     handleKeyDown (e, i) {
-      const allowedKeys = [ 'Backspace', 'Enter' ];
-      e.preventDefault();
+      const keysWithDefaultBehavior = [ 'Shit', 'Tab' ];
+      const digit = this.code[i];
+      const isNumber = !isNaN(parseInt(e.key, 10));
+      const isPasting = e.key === 'v' && this.controlPressed;
 
-      const number = parseInt(e.key, 10);
-
-      // if (!number && number !== 0 && !allowedKeys.includes(e.key)) {
-      // e.preventDefault();
-      // }
-
-      if (this.code[i].length === 1) {
-        e.preventDefault();
-
-        this.focusInput(i);
+      if (e.key === 'Control') {
+        this.controlPressed = true;
       }
 
-      if (this.code[i].length > 1) {
+      if (!keysWithDefaultBehavior.includes(e.key) && !isPasting) {
         e.preventDefault();
+      }
+
+      if (isNumber) {
         this.code.splice(i, 1, e.key);
 
-        this.focusInput(i);
+        this.focusNextInput(i);
       }
 
       if (e.key === 'ArrowLeft') {
-        this.focusInput(i, true);
+        this.focusNextInput(i, true);
       }
 
       if (e.key === 'ArrowRight') {
-        this.focusInput(i);
+        this.focusNextInput(i);
       }
 
-      // this.code.splice(i, 1, e.key);
+      if (e.key === 'Backspace' || e.key === 'Delete') {
+        if (digit) {
+          this.code.splice(i, 1, '');
+        } else {
+          this.focusNextInput(i, e.key === 'Backspace' && true);
+        }
+      }
     },
 
-    focusInput (i, before = false) {
+    handleKeyUp (e) {
+      if (e.key === 'Control') {
+        this.controlPressed = false;
+      }
+    },
+
+    focusNextInput (i, previous = false) {
       const inputs = this.$refs.inputs;
 
-      if (before) {
+      if (previous) {
         if (inputs[i - 1]) {
           inputs[i - 1].focus();
         } else {
@@ -221,44 +269,40 @@ export default {
       if (inputs[i + 1]) {
         inputs[i + 1].focus();
       } else {
-        inputs[0].focus();
+        this.$nextTick(() => {
+          this.$refs.submit.$el.children[0].focus();
+        });
       }
-    }
-    // handleKeyDown(event, index) {
-    //   const key = event.key;
-    //   if (!key) {
-    //     return;
-    //   }
-    //   if (key === 'Backspace') {
-    //     if (this.code[index]) {
-    //       return (this.code[index] = '');
-    //     }
+    },
 
-    //     if (index > 0) {
-    //       event.target.previousElementSibling.focus();
-    //     }
-    //   } else if (
-    //     !event.shiftKey &&
-    //             (key === 'ArrowRight' || key === 'Right')
-    //   ) {
-    //     if (index < this.code.length - 1) {
-    //       event.target.nextElementSibling.focus();
-    //     }
-    //   } else if (
-    //     !event.shiftKey &&
-    //             (key === 'ArrowLeft' || key === 'Left')
-    //   ) {
-    //     if (index > 0) {
-    //       event.target.previousElementSibling.focus();
-    //     }
-    //   } else if (key.length === 1 && this.code[index]) {
-    //     this.code[index] = key;
-    //     this.$forceUpdate();
-    //     if (index < this.code.length - 1) {
-    //       event.target.nextElementSibling.focus();
-    //     }
-    //   }
-    // }
+    pasteCode (e) {
+      const clipboardData = e.clipboardData || window.clipboardData;
+      if (!clipboardData) {
+        return;
+      }
+
+      const codeFromClipboard = clipboardData.getData('Text') ||
+        clipboardData.getData('text/plain');
+
+      const code = codeFromClipboard.substring(0, 6);
+      const codeNumber = parseInt(code, 10);
+
+      if (isNaN(codeNumber)) {
+        return;
+      }
+
+      codeNumber.toString().split('').forEach((num, i) => {
+        this.code.splice(i, 1, num);
+      });
+    },
+
+    awaiting (time) {
+      return new Promise((resolve, reject) => {
+        setTimeout(() => {
+          resolve();
+        }, time);
+      });
+    }
   }
 };
 </script>
