@@ -36,7 +36,7 @@ module.exports = {
               const validSecret = self.getSecret();
               const hash = randomBytes(validSecret ? 5 : 10).toString('hex');
               const token = self.generateToken(hash, validSecret);
-              if (!(await self.apos.user.safe.updateOne({
+              const result = await self.apos.user.safe.updateOne({
                 _id: user._id
               }, {
                 $set: {
@@ -45,7 +45,8 @@ module.exports = {
                     activated: false
                   }
                 }
-              })).modifiedCount) {
+              });
+              if (!result.modifiedCount) {
                 throw self.apos.error('notfound');
               }
               return {
@@ -80,13 +81,14 @@ module.exports = {
 
             if (!safe.totp.activated) {
               try {
-                if (!(await self.apos.user.safe.updateOne({
+                const result = await self.apos.user.safe.updateOne({
                   _id: user._id
                 }, {
                   $set: {
                     'totp.activated': true
                   }
-                })).modifiedCount) {
+                });
+                if (!result.modifiedCount) {
                   throw self.apos.error('notfound');
                 }
               } catch (err) {
