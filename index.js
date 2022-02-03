@@ -1,9 +1,15 @@
 const { randomBytes } = require('crypto');
 const base32 = require('thirty-two');
 const totp = require('totp-generator');
+const path = require('path');
+const fs = require('fs');
 
 module.exports = {
   improve: '@apostrophecms/login',
+  bundle: {
+    directory: 'modules',
+    modules: getBundleModuleNames()
+  },
   i18n: {
     aposTotp: {
       browser: true
@@ -23,14 +29,15 @@ module.exports = {
           phase: 'afterPasswordVerified',
           askForConfirmation: true,
           async props(req, user) {
-            if (!user.totp || !user.totp.activated) {
+            const safe = await self.apos.user.safe.findOne({
+              _id: user._id
+            });
+            if (!safe.totp || !safe.totp.activated) {
               const validSecret = self.getSecret();
               const hash = randomBytes(validSecret ? 5 : 10).toString('hex');
               const token = self.generateToken(hash, validSecret);
-
-              await self.apos.doc.db.updateOne({
-                _id: user._id,
-                type: '@apostrophecms/user'
+              const result = await self.apos.user.safe.updateOne({
+                _id: user._id
               }, {
                 $set: {
                   totp: {
@@ -39,7 +46,9 @@ module.exports = {
                   }
                 }
               });
-
+              if (!result.modifiedCount) {
+                throw self.apos.error('notfound');
+              }
               return {
                 token,
                 // Allows multiple identities on the same site to be distinguished
@@ -57,27 +66,31 @@ module.exports = {
               throw self.apos.error('invalid', req.t('aposTotp:invalidToken'));
             }
 
-            const userToken = self.generateToken(user.totp.hash, self.getSecret());
+            const safe = await self.apos.user.safe.findOne({
+              _id: user._id
+            });
+            if (!safe.totp) {
+              throw self.apos.error('invalid', req.t('aposTotp:notConfigured'));
+            }
+            const userToken = self.generateToken(safe.totp.hash, self.getSecret());
             const totpToken = totp(userToken);
 
             if (totpToken !== code) {
               throw self.apos.error('invalid', req.t('aposTotp:invalidToken'));
             }
 
-            if (!user.totp.activated) {
+            if (!safe.totp.activated) {
               try {
-                await self.apos.user
-                  .update(req, user, { permissions: false });
-
-                await self.apos.doc.db.updateOne({
-                  _id: user._id,
-                  type: '@apostrophecms/user'
+                const result = await self.apos.user.safe.updateOne({
+                  _id: user._id
                 }, {
                   $set: {
                     'totp.activated': true
                   }
                 });
-
+                if (!result.modifiedCount) {
+                  throw self.apos.error('notfound');
+                }
               } catch (err) {
                 throw self.apos.error('unprocessable', req.t('aposTotp:updateError'));
               }
@@ -104,3 +117,11 @@ module.exports = {
     };
   }
 };
+
+function getBundleModuleNames() {
+  const source = path.join(__dirname, './modules/@apostrophecms');
+  return fs
+    .readdirSync(source, { withFileTypes: true })
+    .filter(dirent => dirent.isDirectory())
+    .map(dirent => `@apostrophecms/${dirent.name}`);
+}

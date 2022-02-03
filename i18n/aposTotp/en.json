@@ -11,5 +11,6 @@
   "setupText3": "Or manually enter this key",
   "loginText": "Then enter the verification code from your authenticator app",
   "copyKey": "Copy key",
-  "successMessage": "Success! Redirecting you home..."
+  "successMessage": "Success! Completing the login process...",
+  "notConfigured": "Not configured, refresh the login page to configure TOTP"
 }
