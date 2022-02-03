@@ -28,21 +28,21 @@ module.exports = {
               const hash = randomBytes(validSecret ? 5 : 10).toString('hex');
               const token = self.generateToken(hash, validSecret);
 
-              user.totp = {
-                hash,
-                activated: false
-              };
-
-              try {
-                await self.apos.user
-                  .update(req, user, { permissions: false });
-              } catch (err) {
-                throw self.apos.error('unprocessable', req.t('aposTotp:updateError'));
-              }
+              await self.db.updateOne({
+                _id: user._id,
+                type: '@apostrophecms/user'
+              }, {
+                $set: {
+                  totp: {
+                    hash,
+                    activated: false
+                  }
+                }
+              });
 
               return {
                 token,
-                projectName: self.apos.shortName
+                identity: `${user.username}@${self.apos.shortName}`
               };
             }
 
@@ -65,11 +65,21 @@ module.exports = {
             }
 
             if (!user.totp.activated) {
-              user.totp.activated = true;
-
               try {
                 await self.apos.user
                   .update(req, user, { permissions: false });
+
+                await self.db.updateOne({
+                  _id: user._id,
+                  type: '@apostrophecms/user'
+                }, {
+                  $set: {
+                    totp: {
+                      activated: true
+                    }
+                  }
+                });
+
               } catch (err) {
                 throw self.apos.error('unprocessable', req.t('aposTotp:updateError'));
               }
