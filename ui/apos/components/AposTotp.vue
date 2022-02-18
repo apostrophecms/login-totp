@@ -93,7 +93,6 @@
           button-type="submit"
           class="apos-totp__login-submit"
           :modifiers="['gradient-on-hover', 'block']"
-          @click="sendCode"
         />
       </form>
       <p class="apos-totp__error">
