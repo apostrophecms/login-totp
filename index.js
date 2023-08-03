@@ -76,6 +76,10 @@ module.exports = {
             const totpToken = totp(userToken);
 
             if (totpToken !== code) {
+              self.logInfo('totp-invalid-token', {
+                username: safe.username,
+                ip: req.ip
+              });
               throw self.apos.error('invalid', req.t('aposTotp:invalidToken'));
             }
 
@@ -95,6 +99,11 @@ module.exports = {
                 throw self.apos.error('unprocessable', req.t('aposTotp:updateError'));
               }
             }
+
+            self.logInfo('totp-complete', {
+              username: safe.username,
+              ip: req.ip
+            });
           }
         }
       }
