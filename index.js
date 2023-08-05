@@ -76,9 +76,8 @@ module.exports = {
             const totpToken = totp(userToken);
 
             if (totpToken !== code) {
-              self.logInfo('totp-invalid-token', {
-                username: safe.username,
-                ip: req.ip
+              self.logInfo(req, 'totp-invalid-token', {
+                username: safe.username
               });
               throw self.apos.error('invalid', req.t('aposTotp:invalidToken'));
             }
@@ -100,9 +99,8 @@ module.exports = {
               }
             }
 
-            self.logInfo('totp-complete', {
-              username: safe.username,
-              ip: req.ip
+            self.logInfo(req, 'totp-complete', {
+              username: safe.username
             });
           }
         }

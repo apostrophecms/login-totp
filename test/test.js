@@ -97,10 +97,11 @@ describe('totp module', function () {
 
     await apos.login.requirements.AposTotp.verify(req, totpToken, mary);
 
-    assert.equal(savedArgs[0], 'totp-complete');
-    assert.deepEqual(savedArgs[1], {
-      username: mary.username,
-      ip: '1.1.1.1'
+    // the fancy way to detect `req`
+    assert.equal(typeof savedArgs[0].t, 'function');
+    assert.equal(savedArgs[1], 'totp-complete');
+    assert.deepEqual(savedArgs[2], {
+      username: mary.username
     });
   });
 
@@ -119,9 +120,10 @@ describe('totp module', function () {
     } catch (err) {
       //
     }
-    assert.equal(savedArgs[0], 'totp-invalid-token');
-    assert.deepEqual(savedArgs[1], {
-      ip: '1.1.1.1',
+    // the fancy way to detect `req`
+    assert.equal(typeof savedArgs[0].t, 'function');
+    assert.equal(savedArgs[1], 'totp-invalid-token');
+    assert.deepEqual(savedArgs[2], {
       username: mary.username
     });
   });
