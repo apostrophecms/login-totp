@@ -136,7 +136,7 @@
       opacity: 50%;
     }
 
-    ::v-deep .apos-button {
+    :deep(.apos-button) {
       height: 100%;
     }
   }
