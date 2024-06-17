@@ -3,14 +3,14 @@ module.exports = {
   fields: {
     add: {
       resetTotp: {
-        label: 'Reset TOTP',
+        label: 'aposTotp:resetTotpLabel',
         type: 'boolean',
-        help: 'Select this option and save to reset the user\'s TOTP (Google Authenticator) configuration once, so they can set it up again.'
+        help: 'aposTotp:resetTotpHelp'
       }
     },
     group: {
       totp: {
-        label: 'TOTP',
+        label: 'aposTotp:totpLabel',
         fields: [ 'resetTotp' ]
       }
     }
