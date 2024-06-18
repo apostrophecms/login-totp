@@ -12,5 +12,8 @@
   "loginText": "Then enter the verification code from your authenticator app",
   "copyKey": "Copy key",
   "successMessage": "Success! Completing the login process...",
-  "notConfigured": "Not configured, refresh the login page to configure TOTP"
+  "notConfigured": "Not configured, refresh the login page to configure TOTP",
+  "resetTotpLabel": "Reset TOTP",
+  "resetTotpHelp": "Select this option and save to reset the user's TOTP (Google Authenticator) configuration once, so they can set it up again.",
+  "totpLabel": "TOTP"
 }
