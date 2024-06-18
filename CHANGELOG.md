@@ -4,7 +4,7 @@
 
 ### Adds
 
-* Add missing UI translations.
+* Add missing UI translation keys.
 
 ## 1.2.0 (2024-03-12)
 
