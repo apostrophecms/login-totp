@@ -1,6 +1,6 @@
 # Changelog
 
-## UNRELEASED
+## 1.3.0 (2024-07-10)
 
 ### Adds
 
