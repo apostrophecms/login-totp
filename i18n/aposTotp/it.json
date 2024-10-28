@@ -1,4 +1,5 @@
 {
+
   "missingSecret": "Devi fornire un segreto di lunghezza 10 caratteri nella configurazione del tuo modulo @apostrophecms/login.",
   "badSecretSize": "Il tuo segreto deve avere 10 caratteri di lunghezza.",
   "invalidToken": "Codice non valido, riprova.",
