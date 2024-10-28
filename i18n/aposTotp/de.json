@@ -1,5 +1,6 @@
 {
   "missingSecret": "Sie sollten ein Geheimnis mit einer Länge von 10 Zeichen in Ihrer @apostrophecms/login-Modulkonfiguration angeben.",
+
   "badSecretSize": "Ihr Geheimnis sollte 10 Zeichen lang sein.",
   "invalidToken": "Ungültiger Code, versuchen Sie es erneut.",
   "updateError": "Beim Einrichten Ihres TOTP-Kontos ist ein Fehler aufgetreten.",
