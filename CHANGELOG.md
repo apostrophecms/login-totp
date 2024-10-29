@@ -1,5 +1,9 @@
 # Changelog
 
+## UNRELEASED
+
+* Adds AI-generated and community-reviewed missing translations
+
 ## 1.3.0 (2024-07-10)
 
 ### Adds
