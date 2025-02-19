@@ -290,7 +290,7 @@ export default {
         return;
       }
 
-      codeNumber.toString().split('').forEach((num, i) => {
+      code.split('').forEach((num, i) => {
         this.code.splice(i, 1, num);
       });
     },
