@@ -3,8 +3,8 @@
   $block-width: 530px;
 
   position: relative;
-  width: $block-width;
   left: calc((330px - $block-width) / 2); // 330 being the login wrapper size
+  width: $block-width;
 
   &__setup {
     display: flex;
@@ -17,9 +17,11 @@
   &__title {
     @include type-display;
 
-    text-align: center;
-    margin-top: 0;
-    margin-bottom: 16px;
+    & {
+      margin-top: 0;
+      margin-bottom: 16px;
+      text-align: center;
+    }
 
     &--success {
       margin-bottom: 32px;
@@ -43,8 +45,10 @@
   &__text-grey {
     @include type-large;
 
-    color: var(--a-base-5);
-    margin: 0;
+    & {
+      margin: 0;
+      color: var(--a-base-5);
+    }
   }
 
   &__token-container {
@@ -56,18 +60,20 @@
   &__token {
     @include type-base;
 
-    color: #F9F9F9;
-    background-color: #0f0f0f;
-    border: solid 1px #414141;
-    padding: 5px;
-    margin: 0 0 5px 0;
+    & {
+      margin: 0 0 5px;
+      padding: 5px;
+      border: solid 1px #414141;
+      color: #F9F9F9;
+      background-color: #0f0f0f;
+    }
   }
 
   &__copy-token-btn {
-    background-color: transparent;
-    border: none;
     display: flex;
     align-items: center;
+    border: none;
+    background-color: transparent;
     cursor: pointer;
     float: right;
   }
@@ -78,8 +84,8 @@
 
   &__token-copied {
     position: absolute;
-    bottom: 0;
     right: -20px;
+    bottom: 0;
   }
 
   &__login-text {
@@ -94,27 +100,26 @@
   }
 
   &__login-input {
-    height: 56px;
-    width: 47px;
     box-sizing: border-box;
-    text-align: center;
-    font-size: var(--a-type-display);
-    border-radius: 5px;
-    background-color: #14171e;
+    width: 47px;
+    height: 56px;
+    margin-right: 15px;
     border: solid 1px #8895a7;
     color: #fff;
-    margin-right: 15px;
+    font-size: var(--a-type-display);
+    text-align: center;
+    border-radius: 5px;
+    background-color: #14171e;
     caret-color: transparent;
+    appearance: textfield;
 
     &:focus {
       border: solid 1px #fff;
       outline: none;
     }
 
-    appearance: textfield;
-
     &::-webkit-inner-spin-button {
-      -webkit-appearance: none;
+      appearance: none;
       margin: 0;
     }
 
@@ -129,11 +134,11 @@
   }
 
   &__login-submit {
-    height: 56px;
     flex-grow: 1;
+    height: 56px;
 
     &--disabled {
-      opacity: 50%;
+      opacity: 0.5;
     }
 
     :deep(.apos-button) {
@@ -144,9 +149,11 @@
   &__error {
     @include type-large;
 
-    height: 15px;
-    color: $danger-color;
-    text-transform: uppercase;
+    & {
+      height: 15px;
+      color: $danger-color;
+      text-transform: uppercase;
+    }
   }
 
   &__success {

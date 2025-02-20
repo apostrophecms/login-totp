@@ -3,6 +3,7 @@
 ## UNRELEASED
 
 * Fix pasting on MacOS.
+* Add stylelint.
 
 ## 1.3.1 (2024-10-31)
 
