@@ -1,5 +1,9 @@
 # Changelog
 
+## UNRELEASED
+
+* Fix pasting on MacOS.
+
 ## 1.3.1 (2024-10-31)
 
 * Adds AI-generated and community-reviewed missing translations

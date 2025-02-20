@@ -145,7 +145,7 @@ export default {
       code: Array(6).fill(''),
       copying: false,
       busy: false,
-      controlPressed: false,
+      controlOrMetaKeyPressed: false,
       errorMsg: ''
     };
   },
@@ -211,16 +211,15 @@ export default {
       }
     },
     handleKeyDown (e, i) {
-      const keysWithDefaultBehavior = [ 'Shit', 'Tab' ];
       const digit = this.code[i];
       const isNumber = !isNaN(parseInt(e.key, 10));
-      const isPasting = e.key === 'v' && this.controlPressed;
+      const isPasting = this.controlOrMetaKeyPressed && e.key === 'v';
 
-      if (e.key === 'Control') {
-        this.controlPressed = true;
+      if ([ 'Control', 'Meta' ].includes(e.key)) {
+        this.controlOrMetaKeyPressed = true;
       }
 
-      if (!keysWithDefaultBehavior.includes(e.key) && !isPasting) {
+      if (e.key !== 'Tab' && !isPasting) {
         e.preventDefault();
       }
 
@@ -248,8 +247,8 @@ export default {
     },
 
     handleKeyUp (e) {
-      if (e.key === 'Control') {
-        this.controlPressed = false;
+      if ([ 'Control', 'Meta' ].includes(e.key)) {
+        this.controlOrMetaKeyPressed = false;
       }
     },
 
@@ -291,7 +290,7 @@ export default {
         return;
       }
 
-      codeNumber.toString().split('').forEach((num, i) => {
+      code.split('').forEach((num, i) => {
         this.code.splice(i, 1, num);
       });
     },
