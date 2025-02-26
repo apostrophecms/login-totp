@@ -19,16 +19,21 @@
       <canvas
         ref="canvas"
         class="apos-totp__qrcode"
+        data-apos-test="totpQrcode"
       />
       <p class="apos-totp__text-grey">
         {{ $t('aposTotp:setupText3') }}
       </p>
       <div class="apos-totp__token-container">
-        <p class="apos-totp__token">
+        <p
+          class="apos-totp__token"
+          data-apos-test="totpToken"
+        >
           {{ token }}
         </p>
         <button
           class="apos-totp__text-grey apos-totp__copy-token-btn"
+          data-apos-test="totpCopyToken"
           @click="copyToken(token)"
         >
           <AposIndicator
@@ -65,6 +70,7 @@
       </p>
       <form
         class="apos-totp__login-form"
+        data-apos-test="totpForm"
         @submit.prevent="sendCode"
       >
         <input
