@@ -75,9 +75,6 @@ module.exports = {
             const userToken = self.generateToken(safe.totp.hash, self.getSecret());
             const totpToken = totp(userToken);
 
-            console.log('userToken', userToken);
-            console.log('totpToken', totpToken);
-            console.log('code', code);
             if (totpToken !== code) {
               self.logInfo(req, 'totp-invalid-token', {
                 username: safe.username
@@ -98,12 +95,10 @@ module.exports = {
                   throw self.apos.error('notfound');
                 }
               } catch (err) {
-                console.error(err);
                 throw self.apos.error('unprocessable', req.t('aposTotp:updateError'));
               }
             }
 
-            console.log('FINISHED OK');
             self.logInfo(req, 'totp-complete', {
               username: safe.username
             });
