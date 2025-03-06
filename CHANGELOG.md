@@ -4,6 +4,7 @@
 
 * Fix pasting on MacOS.
 * Add stylelint.
+* Add data-test attributes.
 
 ## 1.3.1 (2024-10-31)
 
