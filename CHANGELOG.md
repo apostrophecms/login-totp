@@ -1,6 +1,6 @@
 # Changelog
 
-## UNRELEASED
+## 1.3.2 (2025-03-19)
 
 * Fix pasting on MacOS.
 * Add stylelint.
